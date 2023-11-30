@@ -4,9 +4,13 @@
 #include <unistd.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <semaphore.h>
+#include <ctype.h>
+#include <fcntl.h>
 
 // Shared memory key
 #define SHAREMEMORY_KEY 1234
+#define SEMAPHORE_KEY "/my_semaphore"
 
 void create_blackboard(){
     // Clear the screen
@@ -33,16 +37,25 @@ void draw_drone(int drone_x, int drone_y){
     refresh();
 }
 
-void handle_input(int *shared_key){
+void handle_input(int *shared_key, sem_t *semaphore){
     int ch;
+
+    // Disable echoing
+    noecho();
 
     if ( (ch = getch() ) != ERR) {
         // Debugging: Print the pressed key
-        printf("Pressed key: %d\n", ch);
+        //printf("Pressed key: %d\n", ch);
 
         // Store the pressed key in shared memory
         *shared_key = ch;
+
+        // Signal the semaphore to notify the server
+        sem_post(semaphore);
     }
+
+    // Enable echoing
+    echo();
 
     // Clear the input buffer
     flushinp();
@@ -51,6 +64,7 @@ void handle_input(int *shared_key){
 int main(){
     initscr();
     timeout(0); // Set non-blocking getch
+    curs_set(0); // Hide the cursor from the terminal
     create_blackboard();
 
     // Initialize shared memory
@@ -69,6 +83,13 @@ int main(){
         exit(1);
     }
 
+    // Initialize semaphore
+    sem_t *semaphore = sem_open(SEMAPHORE_KEY, O_CREAT, 0666, 0);
+    if (semaphore == SEM_FAILED) {
+        perror("sem_open");
+        exit(1);
+    }
+
     // Initial drone position (middle of the blackboard)
     int max_y, max_x;
     getmaxyx(stdscr, max_y, max_x);
@@ -83,15 +104,20 @@ int main(){
     while(1){
         create_blackboard();
         draw_drone(drone_x, drone_y);
-        handle_input(shared_memory);
-        usleep(100000); // Add a small delay to control the speed
+        handle_input(shared_memory, semaphore);
+        usleep(200000); // Add a small delay to control the speed
         continue;
     }
 
     // Detach the shared memory segment
-    //shmdt(shared_memory);
+    shmdt(shared_memory);
 
+    // Close and unlink the semaphore
+    sem_close(semaphore);
+
+    // End the shared memory segment
     shmctl(shared_key, IPC_RMID, NULL);
+
     endwin();
     return 0;
 
