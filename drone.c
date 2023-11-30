@@ -19,3 +19,26 @@ void euler_method(double *x, double *v_x, double force_x, double *y, double *v_y
     *v_y = *v_y + acceleration_y * TIME_INTERVAL;
     *y = *y + (*v_y) * TIME_INTERVAL;
 }
+
+
+int main() {
+    double x = 100.0;  // Initial position of x
+    double v_x = 0.0;    // Initial velocity of x
+    double force_x = 10.0; // Applied force in the x direction
+
+    double y = 50.0;   // Initial position of y
+    double v_y = 0.0;    // Initial velocity of y
+    double force_y = 5.0; // Applied force in the y direction
+
+    // Simulate the motion in an infinite loop using Euler's method
+    while (1) {
+        euler_method(&x, &v_x, force_x, &y, &v_y, force_y);
+        printf("X - Position: %.2f / Velocity: %.2f\t|\t", x, v_x);
+        printf("Y - Position: %.2f / Velocity: %.2f\n", y, v_y);
+
+        // Introduce a delay to simulate real-time intervals
+        usleep(TIME_INTERVAL * 1e6);
+    }
+
+    return 0;
+}
