@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "ipc.h": "c",
-        "semaphore.h": "c"
+        "semaphore.h": "c",
+        "types.h": "c",
+        "unistd.h": "c"
     }
 }
