@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#define FLOAT_TOLERANCE 0.0044
+
 // Shared memory key for key presses
 #define SHAREMEMORY_KEY "/shared_keyboard"
 #define SHAREMEMORY_KEY_1 1
@@ -20,24 +22,5 @@
 // Special value to indicate no key pressed
 #define NO_KEY_PRESSED 0
 
-//#define DELAY 50000
-
-/*
-enum objects
-{
-    DRONE,
-    TARGET,
-    OBSTACLE,
-    NONE
-};
-
-struct Object 
-{   
-  enum objects type;
-  int pos_x;          
-  int pos_y;
-  char sym;       
-};
-*/
 
 #endif // CONSTANTS_H

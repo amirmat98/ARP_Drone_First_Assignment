@@ -14,7 +14,7 @@
 
 //#define REFRESH_RATE 20000
 
-void create_blackboard();
+void create_window();
 void draw_drone(int drone_x, int drone_y);
 void handle_input(int *shared_key, sem_t *semaphore);
 
