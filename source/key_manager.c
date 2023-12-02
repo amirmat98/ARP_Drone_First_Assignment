@@ -68,7 +68,7 @@ int main(){
         int pressed_key = *shared_memory;
         printf("Pressed key: %c\n", (char)pressed_key);
         // Clear the shared memory after processing the key
-        clearSharedMemory(sharedMemory);
+        clearSharedMemory(shared_memory);
 
         // Determine the action based on the pressed key
         char *action = determine_action(pressed_key, shared_action);
