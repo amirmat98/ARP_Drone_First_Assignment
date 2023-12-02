@@ -5,6 +5,7 @@
         "types.h": "c",
         "unistd.h": "c",
         "constants.h": "c",
-        "wait.h": "c"
+        "wait.h": "c",
+        "fcntl.h": "c"
     }
 }

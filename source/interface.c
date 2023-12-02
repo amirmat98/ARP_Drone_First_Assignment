@@ -33,6 +33,11 @@ int main()
     sem_key = sem_open(SEMAPHORE_KEY, 0);
     sem_pos = sem_open(SEMAPHORE_POSITION, 0);
 
+    // Execution of NCURSES code
+    initscr();
+    timeout(0); // Set non-blocking getch
+    curs_set(0); // Hide the cursor from the terminal
+    create_blackboard();
 
     // Initial drone position (middle of the blackboard)
     int max_y, max_x;
@@ -41,14 +46,7 @@ int main()
     int drone_y = max_y / 2;
 
     // Write initial drone position in its corresponding shared memory
-    sprintf((char *)ptr_pos, "%d,%d", drone_x, drone_y);
-
-
-    initscr();
-    timeout(0); // Set non-blocking getch
-    curs_set(0); // Hide the cursor from the terminal
-    create_blackboard();
-
+    sprintf(ptr_pos, "%d,%d", drone_x, drone_y);
 
     // Initialize color
     start_color();

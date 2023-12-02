@@ -137,7 +137,7 @@ char* determine_action(int pressed_key, char *shared_action)
     }
     if ( key == 'S' || key == 'K')
     {
-        x = 0;    // Movement on the X axis.
+        x = 900;    // Movement on the X axis.
         y = 0;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
         return "STOP";
