@@ -3,6 +3,7 @@
         "ipc.h": "c",
         "semaphore.h": "c",
         "types.h": "c",
-        "unistd.h": "c"
+        "unistd.h": "c",
+        "constants.h": "c"
     }
 }

@@ -11,8 +11,14 @@
 
 
 // Function prototypes
-// FIXME - why are these never used
-void create_shared_memory();
+
+/*
+Create shared memory
+    @param name path to shared memory
+    @returns ptr to shared memory
+*/
+
+void *create_shm(char *name);
 void handle_input(int *shared_key, sem_t *semaphore);
 
 #endif // SERVER_H
