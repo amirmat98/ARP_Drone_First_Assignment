@@ -8,15 +8,25 @@
 #include <sys/shm.h>
 #include <semaphore.h>
 #include <fcntl.h>
+#include <signal.h>
 
 
-// Function prototypes
+/*
+    Creates shared memory segments 
+    This is divieded into two parts.
+    he first part creates the shared memory segment with predefined functions and size. 
+    The second part maps the memory and returns the ptr. 
+    @param name Name of the shared memory segment    
+    @returns pointer to the memory map of type void
+*/
+void signal_handler(int signo, siginfo_t *siginfo, void *context);
 
-// Function prototypes
-// FIXME - why are these never used
-void create_shared_memory();
-void handle_input(int *shared_key, sem_t *semaphore);
 
+/*
+    Closes and unlinks semaphores, unmaps and unlinks shared memory segments
+*/
 void *create_shm(char *name);
+
+void clean_up();
 
 #endif // SERVER_H
