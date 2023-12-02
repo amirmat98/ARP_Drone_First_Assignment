@@ -14,24 +14,25 @@
 
 int main()
 {
+    // Shared memory variables
+    void *ptr_key;       
+    void *ptr_action;            
     int shared_key;
-    void *ptr_key;        // Shared memory for Key pressing
-    void *ptr_action;        // Shared memory for Drone Position      
-    
     int shared_action;
-    sem_t *sem_key;       // Semaphore for key presses
-    sem_t *sem_action;       // Semaphore for drone positions
 
-    // Shared memory for KEY PRESSING
+    // Semaphores
+    sem_t *sem_key;  
+    sem_t *sem_action;       
+
+    // Initialize shared memory for KEY PRESSING
     shared_key = shm_open(SHAREMEMORY_KEY, O_RDWR, 0666);
     ptr_key = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, shared_key, 0);
 
-
-    // Shared memory for DRONE CONTROL - ACTION
+    // Initialize shared memory for DRONE CONTROL - ACTION
     shared_action = shm_open(SHAREMEMORY_ACTION, O_RDWR, 0666);
     ptr_action = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, shared_action, 0);
 
-
+    // Initialize semaphores
     sem_key = sem_open(SEMAPHORE_KEY, 0);
     sem_action = sem_open(SEMAPHORE_ACTION, 0);
 
@@ -39,24 +40,20 @@ int main()
     /*THIS SECTION IS FOR OBTAINING KEY INPUT*/
     while (1) 
     {
-        // Wait for the semaphore to be signaled
-        sem_wait(sem_key);
+        /*THIS SECTION IS FOR OBTAINING KEY INPUT*/
 
-        // Wait for the semaphore to be signaled
-        sem_wait(sem_key);
-        // Read the pressed key from shared memory
-        int pressed_key = *(int*)ptr_key; 
-        //printf("Pressed key: %c\n", (char)pressedKey);
+        sem_wait(sem_key);  // Wait for the semaphore to be signaled from interface.c process
+        int pressed_key = *(int*)ptr_key;    // Read the pressed key from shared memory 
         printf("Pressed key: %c\n", (char)pressed_key);
-        // Clear the shared memory after processing the key
-        clear_shared_memory(ptr_key);
+        fflush(stdout);
 
         /*THIS SECTION IS FOR DRONE ACTION DECISION*/
-        // Determine the action based on the pressed key
+
         char *action = determine_action(pressed_key, ptr_action);
-        // Print the action taken
         printf("Action sent to drone: %s\n\n", action);
         fflush(stdout);
+
+        shared_key = NO_KEY_PRESSED; // Clear the shared memory after processing the key
     }
 
 
@@ -79,6 +76,7 @@ char* determine_action(int pressed_key, char *shared_action)
     char key = toupper(pressed_key);
     int x; int y;
 
+    // Disclaimer: Y axis is inverted on tested terminal.
     if ( key == 'W' || key == 'I')
     {
         x = 0;    // Movement on the X axis.
@@ -98,14 +96,14 @@ char* determine_action(int pressed_key, char *shared_action)
         x = -1;    // Movement on the X axis.
         y = 0;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
-        return "RIGHT";
+        return "LEFT";
     }
     if ( key == 'D' || key == 'L')
     {
         x = 1;    // Movement on the X axis.
         y = 0;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
-        return "LEFT";
+        return "RIGHT";
     }
     if ( key == 'Q' || key == 'U')
     {
@@ -137,8 +135,8 @@ char* determine_action(int pressed_key, char *shared_action)
     }
     if ( key == 'S' || key == 'K')
     {
-        x = 900;    // Movement on the X axis.
-        y = 0;    // Movement on the Y axis.
+        x = 900;    // Special value interpreted by drone.c process
+        y = 0;
         sprintf(shared_action, "%d,%d", x, y);
         return "STOP";
     }
@@ -148,12 +146,3 @@ char* determine_action(int pressed_key, char *shared_action)
     }
 
 }
-
-
-void clear_shared_memory(int* shared_memory)
-{
-    // Set the shared memory to a special value to indicate no key pressed
-    *shared_memory = NO_KEY_PRESSED;
-}
-
-

@@ -22,6 +22,9 @@ int main()
     // Initialize shared memory for drone actions.
     int shared_act;
     char *shared_action;
+    // Initialize semaphores
+    sem_t *sem_pos;
+    sem_t *sem_action;
 
     // Shared memory for DRONE POSITION
     shared_pos = shm_open(SHAREMEMORY_POSITION, O_RDWR, 0666);
@@ -31,16 +34,11 @@ int main()
     shared_act = shm_open(SHAREMEMORY_ACTION, O_RDWR, 0666);
     shared_action = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, shared_act, 0);
 
-
-    sem_t *semaphore_act = sem_open(SHAREMEMORY_ACTION, O_CREAT, 0666, 0);
-    if (semaphore_act == SEM_FAILED)
-    {
-        perror("sem_open");
-        exit(1);
-    }
+    sem_pos = sem_open(SEMAPHORE_POSITION, 0);
+    sem_action = sem_open(SEMAPHORE_ACTION, 0);
 
     // Variable declaration segment
-    usleep(100000); // To let the interface.c process write the initial positions first.
+    usleep(100000); // To let the interface.c process execute first write the initial positions.
     int x; int y;
     int max_x; int max_y;
     int action_x; int action_y;
@@ -58,7 +56,7 @@ int main()
     double v_y = 0.0;    // Initial velocity of y
     double force_y = 1.0; // Applied force in the y direction
 
-    bool euler_method_flag = true; // Obtain from keyboard manager
+    bool euler_method_flag = true; // For testing purposes.
 
     // Simulate the motion in an infinite loop using Euler's method
     while (1) 
@@ -107,6 +105,7 @@ int main()
             int x_f = (int)round(pos_x);
             int y_f = (int)round(pos_y);
             sprintf(shared_position, "%d,%d,%d,%d", x_f, y_f, max_x, max_y);
+            sem_post(sem_pos);
         }
 
         /* DRONE CONTROL WITH THE STEP METHOD*/
@@ -127,6 +126,7 @@ int main()
                 sprintf(shared_action, "%d,%d", 0, 0); // Zeros written on action memory
                 // Write new drone position to shared memory
                 sprintf(shared_position, "%d,%d,%d,%d", x, y, max_x, max_y);
+                sem_post(sem_pos);
             }
         }
 

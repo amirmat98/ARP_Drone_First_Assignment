@@ -33,14 +33,13 @@ int main()
     sem_key = sem_open(SEMAPHORE_KEY, 0);
     sem_pos = sem_open(SEMAPHORE_POSITION, 0);
 
-    /* INITIALIZATION AND EXECUTION OF NCURSES CODE */
-    initscr();
+    /* INITIALIZATION AND EXECUTION OF NCURSES FUNCTIONS */
+    initscr(); // Initialize
     timeout(0); // Set non-blocking getch
     curs_set(0); // Hide the cursor from the terminal
     //create_window();  // Create the windows on the spawned 'Konsole' terminal.
-    // Initialize color
-    start_color();
-    init_pair(1, COLOR_BLUE, COLOR_BLACK);
+    start_color(); // Initialize color for drawing drone
+    init_pair(1, COLOR_BLUE, COLOR_BLACK); // Drone will be of color blue
 
     // Set the initial drone position (middle of the window)
     int max_y, max_x;
@@ -56,27 +55,29 @@ int main()
 
     while (1) 
     {
-        //createWindow(); // Redraw window in case the screen changed
-        // Obtain the positionvalues stored in shared memory
+        sem_wait(sem_pos); // Wait for the semaphore to be signaled from drone.c process
+        // Obtain the position values from shared memory
         sscanf(ptr_pos, "%d,%d,%d,%d", &drone_x, &drone_y, &max_x, &max_y);
         // Create the window
-        // Rewrite the maximum values if necessary
         if (create_window(max_x, max_y) == 1)
         {
             getmaxyx(stdscr, max_y, max_x);
+            // Rewrite the maximum values because windows size change (==1)
             sprintf(ptr_pos, "%d,%d,%d,%d", drone_x, drone_y, max_x, max_y);
         }
+        // Draw the drone on the screen based on the obtained positions.
         draw_drone(drone_x, drone_y);
+        // Call the function that obtains the key that has been pressed.
         handle_input(ptr_key, sem_key);
         /* Update drone position */
         //sem_wait(semaphorePos);
         //sscanf(ptr_pos, "%d,%d,%d,%d", &drone_x, &drone_y, &max_x, &max_y); // Obtain the values of X,Y from shared memory
         //sem_post(semaphorePos);
-        usleep(20000);
-        continue;
+        //usleep(20000);
+        //continue;
     }
-    endwin(); // Clean up and finish up resources taken by ncurses
-
+    // Clean up and finish up resources taken by ncurses
+    endwin(); 
     // close shared memories
     close(shm_key_fd);
     close(shm_pos_fd);
@@ -126,8 +127,9 @@ void handle_input(int *shared_key, sem_t *semaphore)
     {
         // Store the pressed key in shared memory
         *shared_key = ch;
-        // Signal the semaphore to notify the server
-        sem_post(semaphore);
+        // Signal the semaphore
+        *shared_key = ch;    // Store the pressed key in shared memory
+        sem_post(semaphore);    // Signal the semaphore to process key_manager.c
     }
     echo(); // Re-enable echoing
     flushinp(); // Clear the input buffer
