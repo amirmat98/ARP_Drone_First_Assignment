@@ -70,7 +70,7 @@ int main()
         printf("Action (x,y): %s\n",shared_action);
 
         /* DRONE CONTROL WITH THE DYNAMICS FORMULA*/
-        if(euler_method)
+        if(euler_method_flag)
         {
             // Only values between -1 to 1 are used to move the drone
             if(action_x >= -1.0 && action_x <= 1.0)
@@ -143,8 +143,7 @@ int main()
 
 
 // Implementation of the eulerMethod function
-void euler_method(double *x, double *v_x, double force_x, double *y, double *v_y, double force_y, double *max_x, double *max_y) 
-{
+void euler_method(double *x, double *v_x, double force_x, double *y, double *v_y, double force_y, double *max_x, double *max_y) {
     double acceleration_x = (force_x - DAMPING * (*v_x)) / MASS;
     double acceleration_y = (force_y - DAMPING * (*v_y)) / MASS;
 
