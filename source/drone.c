@@ -143,22 +143,22 @@ int main()
 
 
 // Implementation of the eulerMethod function
-void euler_method(double *x, double *v_x, double force_x, double *y, double *v_y, double force_y, double *max_x, double *max_y)
+void euler_method(double *x, double *v_x, double force_x, double *y, double *v_y, double force_y, double *max_x, double *max_y) 
 {
     double acceleration_x = (force_x - DAMPING * (*v_x)) / MASS;
     double acceleration_y = (force_y - DAMPING * (*v_y)) / MASS;
 
-    // Update velocity and position for x using Euler's method
+    // Update velocity and position for X using Euler's method
     *v_x = *v_x + acceleration_x * TIME_INTERVAL;
     *x = *x + (*v_x) * TIME_INTERVAL;
     if (*x < 0){*x = 0;}
-    if (*x > *max_x){*x = *max_x;}
+    if (*x > *max_x){*x = *max_x-1;}
 
-    // Update velocity and position for y using Euler's method
+    // Update velocity and position for Y using Euler's method
     *v_y = *v_y + acceleration_y * TIME_INTERVAL;
     *y = *y + (*v_y) * TIME_INTERVAL;
     if (*y < 0){*y = 0;}
-    if (*y > *max_y){*y = *max_y;}
+    if (*y > *max_y){*y = *max_y-1;}
 }
 
 // Moving the drone step by step as initial development

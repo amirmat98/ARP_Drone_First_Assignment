@@ -37,7 +37,7 @@ int main()
     initscr();
     timeout(0); // Set non-blocking getch
     curs_set(0); // Hide the cursor from the terminal
-    create_window();  // Create the windows on the spawned 'Konsole' terminal.
+    //create_window();  // Create the windows on the spawned 'Konsole' terminal.
     // Initialize color
     start_color();
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
@@ -56,12 +56,21 @@ int main()
 
     while (1) 
     {
-        createWindow(); // Redraw window in case the screen changed
+        //createWindow(); // Redraw window in case the screen changed
+        // Obtain the positionvalues stored in shared memory
+        sscanf(ptr_pos, "%d,%d,%d,%d", &drone_x, &drone_y, &max_x, &max_y);
+        // Create the window
+        // Rewrite the maximum values if necessary
+        if (create_window(max_x, max_y) == 1)
+        {
+            getmaxyx(stdscr, max_y, max_x);
+            sprintf(ptr_pos, "%d,%d,%d,%d", drone_x, drone_y, max_x, max_y);
+        }
         draw_drone(drone_x, drone_y);
         handle_input(ptr_key, sem_key);
         /* Update drone position */
         //sem_wait(semaphorePos);
-        sscanf(ptr_pos, "%d,%d,%d,%d", &drone_x, &drone_y, &max_x, &max_y); // Obtain the values of X,Y from shared memory
+        //sscanf(ptr_pos, "%d,%d,%d,%d", &drone_x, &drone_y, &max_x, &max_y); // Obtain the values of X,Y from shared memory
         //sem_post(semaphorePos);
         usleep(20000);
         continue;
@@ -79,23 +88,25 @@ int main()
     return 0;
 }
 
-void createWindow()
+int create_window(int max_x, int max_y)
 {
     // Clear the screen
     clear();
 
     // Get the dimensions of the terminal window
-    int max_x, max_y;
-    getmaxyx(stdscr, max_y, max_x);
+    int new_max_x, new_max_y;
+    getmaxyx(stdscr, new_max_y, new_max_x);
 
     // Draw a rectangular border using the box function
     box(stdscr, 0, 0);
 
     // Print a title in the top center part of the window
-    mvprintw(0, (max_x - 11) / 2, "Drone Control");
+    mvprintw(0, (new_max_x - 11) / 2, "Drone Control");
 
     // Refresh the screen to apply changes
     refresh();
+    if(new_max_x != max_x || new_max_y != max_y){return 1;}
+    else{return 0;}
 }
 
 void draw_drone(int drone_x, int drone_y)
