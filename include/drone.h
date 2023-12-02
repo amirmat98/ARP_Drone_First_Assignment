@@ -6,5 +6,6 @@
 #define TIME_INTERVAL 0.1 // Time interval in seconds
 
 void euler_method(double *x, double *v_x, double force_x, double *y, double *v_y, double force_y);
+void step_method(int *x, int *y, int action_x, int action_y, char *shared_action);
 
 #endif //DRONE_H

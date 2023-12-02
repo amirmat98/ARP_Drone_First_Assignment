@@ -17,14 +17,14 @@
  * @param pressedKey 
  * @returns Message with with pressed key
 */
-char* determine_action(int pressed_key);
+char* determine_action(int pressed_key, char *shared_act);
 
 /**
  * Sends action to Drone
  * 
  * @param action translated action
 */
-void send_action_to_drone(char* action);
+//void send_action_to_drone(char* action);
 
 /**
  * Clears shared Memory 

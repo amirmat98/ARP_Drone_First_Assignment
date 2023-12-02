@@ -15,7 +15,7 @@
 void create_blackboard();
 void draw_drone(int drone_x, int drone_y);
 void handle_input(int *shared_key, sem_t *semaphore);
-void initialize_drone_position(int *shared_pos, int drone_position[2]);
+//void initialize_drone_position(int *shared_pos, int drone_position[2]);
 
 
 #endif //INTERFACE_H
