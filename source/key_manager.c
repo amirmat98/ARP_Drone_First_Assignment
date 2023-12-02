@@ -5,97 +5,77 @@
 #include <unistd.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include <semaphore.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <semaphore.h>
 
-int main(){
-    // Initialize shared memory
+
+int main()
+{
     int shared_key;
-    int *shared_memory;
-
-    // Try to access the existing shared memory segment
-    if ((shared_key = shmget(SHAREMEMORY_KEY_1, sizeof(int), 0666)) < 0) {
-        perror("shmget");
-        exit(1);
-    }
-
-    // Attach the shared memory segment
-    if ((shared_memory = shmat(shared_key, NULL, 0)) == (int *)-1) {
-        perror("shmat");
-        exit(1);
-    }
-
-    // Initialize semaphore
-    sem_t *semaphore = sem_open(SEMAPHORE_KEY_1, O_CREAT, 0666, 0);
-    if (semaphore == SEM_FAILED) {
-        perror("sem_open");
-        exit(1);
-    }
-
-    // Initialize shared memory 3: 'Action'
-    int shared_act;
-    char *shared_action;
-
-    if ((shared_act = shmget(SHAREMEMORY_KEY_3, 80*sizeof(char), IPC_CREAT | 0666)) < 0)
-    {
-        perror("shmget");
-        exit(1);
-    }
-
-    if ((shared_action = shmat(shared_act, NULL, 0)) == (char *)-1)
-    {
-        perror("shmat");
-        exit(1);
-    }
+    void *ptr_key;        // Shared memory for Key pressing
+    void *ptr_action;        // Shared memory for Drone Position      
     
-    sem_t *semaphore_act = sem_open(SEMAPHORE_KEY_3, O_CREAT, 0666, 0);
-    if (semaphore_act == SEM_FAILED)
-    {
-        perror("sem_open");
-        exit(1);
-    }
+    int shared_action;
+    sem_t *sem_key;       // Semaphore for key presses
+    sem_t *sem_action;       // Semaphore for drone positions
+
+    // Shared memory for KEY PRESSING
+    shared_key = shm_open(SHAREMEMORY_KEY, O_RDWR, 0666);
+    ptr_key = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, sharedKey, 0);
 
 
+    // Shared memory for DRONE CONTROL - ACTION
+    shared_action = shm_open(SHAREMEMORY_ACTION, O_RDWR, 0666);
+    ptr_action = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, sharedAction, 0);
+
+
+    sem_key = sem_open(SEMAPHORE_KEY, 0);
+    sem_action = sem_open(SEMAPHORE_ACTION, 0);
 
     // Main loop
     /*THIS SECTION IS FOR OBTAINING KEY INPUT*/
-    while (1) {
+    while (1) 
+    {
         // Wait for the semaphore to be signaled
-        sem_wait(semaphore);
+        sem_wait(sem_key);
 
+        // Wait for the semaphore to be signaled
+        sem_wait(sem_key);
         // Read the pressed key from shared memory
-        int pressed_key = *shared_memory;
+        int pressed_key = *(int*)ptr_key; 
+        //printf("Pressed key: %c\n", (char)pressedKey);
         printf("Pressed key: %c\n", (char)pressed_key);
         // Clear the shared memory after processing the key
-        clearSharedMemory(shared_memory);
+        clear_shared_memory(ptr_key);
 
+        /*THIS SECTION IS FOR DRONE ACTION DECISION*/
         // Determine the action based on the pressed key
-        char *action = determine_action(pressed_key, shared_action);
-
-        /*THUS SECTION IS FOR DRONE ACTION DECISION*/
-
-        // Determine the action based on the pressed key
-        char *action = determine_action(pressed_key, shared_action);
+        char *action = determine_action(pressed_key, ptr_action);
         // Print the action taken
         printf("Action sent to drone: %s\n\n", action);
         fflush(stdout);
     }
 
 
-    // Detach the shared memory segment
-    shmdt(shared_memory);
-    shmdt(shared_action);
+    // close shared memories
+    close(shared_key);
+    close(shared_action);
+
     // Close and unlink the semaphore
-    sem_close(semaphore);
-    sem_close(semaphore_act);
+    sem_close(sem_key);
+    sem_close(sem_action);
+
 
     return 0;
 }
 
 
-char* determine_action(int pressed_key, char *shared_action){
-
+// US Keyboard assumed
+char* determine_action(int pressed_key, char *shared_action)
+{
     char key = toupper(pressed_key);
     int x; int y;
 
@@ -169,15 +149,6 @@ char* determine_action(int pressed_key, char *shared_action){
 
 }
 
-
-/*
-void send_action_to_drone(char* action){
-    // Here you can implement the code to send the action to the drone program
-    // For now, let's print the action to the standard output
-    printf("Action sent to drone: %s\n\n", action);
-    fflush(stdout);
-}
-*/
 
 void clear_shared_memory(int* shared_memory)
 {

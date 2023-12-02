@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     create_child(drone_args[0], drone_args);
     number_process++;
 
-
+    /* Wait for all children to close */
     for (int i = 0; i < number_process; i++)
     {
         int pid, status;

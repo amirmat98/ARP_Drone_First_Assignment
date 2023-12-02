@@ -5,44 +5,35 @@
 #include <unistd.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/mman.h>
 #include <semaphore.h>
 #include <ctype.h>
 #include <fcntl.h>
 
 
 
-int main() {
-
+int main() 
+{
     // Initialize shared memory for drone positions
     int shared_pos;
-    int *shared_position;
-
-    if ((shared_pos = shmget(SHAREMEMORY_KEY_2, 2 * sizeof(int), IPC_CREAT | 0666)) < 0) {
-        perror("shmget");
-        exit(1);
-    }
-
-    if ((shared_position = shmat(shared_pos, NULL, 0)) == (int *)-1) {
-        perror("shmat");
-        exit(1);
-    }
-
-
+    char *shared_position;
     // Initialize shared memory for drone actions.
     int shared_act;
     char *shared_action;
 
-    if ((shared_act = shmget(SHAREMEMORY_KEY_3, 80*sizeof(char), IPC_CREAT | 0666)) < 0) {
-        perror("shmget");
-        //exit(1);
-    }
+    // Shared memory for DRONE POSITION
+    shared_pos = shm_open(SHAREMEMORY_POSITION, O_RDWR, 0666);
+    shared_position = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, sharedPos, 0);
 
-    if ((shared_action = shmat(shared_act, NULL, 0)) == (char *)-1) {
-        perror("shmat");
-        //exit(1);
-    }
+    // Shared memory for DRONE CONTROL - ACTION
+    shared_act = shm_open(SHAREMEMORY_ACTION, O_RDWR, 0666);
+    shared_action = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, sharedAct, 0);
 
-    sem_t *semaphore_act = sem_open(SEMAPHORE_KEY_3, O_CREAT, 0666, 0);
+
+
+
+
+    sem_t *semaphore_act = sem_open(SHAREMEMORY_ACTION, O_CREAT, 0666, 0);
     if (semaphore_act == SEM_FAILED)
     {
         perror("sem_open");
