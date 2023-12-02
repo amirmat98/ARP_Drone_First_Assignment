@@ -10,11 +10,15 @@ int main(int argc, char *argv[])
 {
     int number_process = 0; //number of processes
 
+    /* Server  */
+    char* server_args[] = {"konsole", "-e", "./build/server", NULL};
+    create_child(server_args[0], server_args);
+    number_process++;
+
     /* Window - Interface */
     char* ui_args[] = {"konsole", "-e", "./build/interface", NULL};
     create_child(ui_args[0], ui_args);
     number_process++;
-
 
     /* Keyboard manager */
     char* km_args[] = {"konsole", "-e", "./build/key_manager", NULL};

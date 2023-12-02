@@ -24,12 +24,12 @@ int main()
 
     // Shared memory for KEY PRESSING
     shared_key = shm_open(SHAREMEMORY_KEY, O_RDWR, 0666);
-    ptr_key = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, sharedKey, 0);
+    ptr_key = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, shared_key, 0);
 
 
     // Shared memory for DRONE CONTROL - ACTION
     shared_action = shm_open(SHAREMEMORY_ACTION, O_RDWR, 0666);
-    ptr_action = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, sharedAction, 0);
+    ptr_action = mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, shared_action, 0);
 
 
     sem_key = sem_open(SEMAPHORE_KEY, 0);

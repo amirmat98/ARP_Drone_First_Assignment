@@ -18,6 +18,5 @@ void create_blackboard();
 void draw_drone(int drone_x, int drone_y);
 void handle_input(int *shared_key, sem_t *semaphore);
 
-void *create_shm(char *name);
 
 #endif //INTERFACE_H
