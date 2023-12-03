@@ -1,5 +1,6 @@
 #include "interface.h"
 #include "constants.h"
+#include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,6 +12,7 @@
 #include <semaphore.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <signal.h>
 
 
 int main()
