@@ -1,5 +1,14 @@
-ARP First Assignment 20231202
-# Assignment details
+# Description
+[Università degli studi di Genova](https://unige.it/en/ "University of Genova")
+
+Professor: [Renato Zaccaria](renato.zaccaria@unige.it "Renato Zaccaria")
+
+Student: [AmirMahdi Matin](https://github.com/amirmat98 "AmirMahdi Matin")  - 5884715 - Robotics Engineering
+
+# Table of Contents
+
+
+# ARP First Assignment - 20231202
 Deadline: December 3, 2023, 12:59 pm.
 
 After this date you can upload your work, but a penalty will be applied in the evaluation mark. 
@@ -25,14 +34,14 @@ What you upload cannot be substituted for no reason.
 After submission, public your work on GITHUB.
 
 # Assignment 1
-This assignment represents the first part of the project for Advanced and Robot Programming course on UniGe in the winter semester 2023/2024.
-
-The project have been done by AMIRMAHDI MATIN 5888447
+TThis assignment constitutes the initial segment of the project for the Advanced and Robot Programming course at UniGe during the winter semester of 2023/2024.
+The project was completed by AMIRMAHDI MATIN with the student ID 5884715.
 
 ## Installation & Usage
-For project's configuration we have used `Makefile`.
+We utilized the `Makefile` for configuring the project.
 
-To build executables simply hit:
+To build executables, simply use the following command:
+
 ```
 make
 ```
@@ -42,7 +51,7 @@ To run the game hit:
 ```
 make run
 ```
-when this happens a 5 windows with konsole processes will launch, each one for different segment.
+Upon occurrence of this event, five separate windows containing konsole processes will be initiated, with each window dedicated to a distinct section.
 
 To remove the executables simply hit 
 ```
@@ -50,55 +59,53 @@ make clean
 ```
 
 ### Operational instructions, controls
-To operate the drone use following keybindings
+To control the drone, utilize the following keybindings:
+
     `q` `w` `e`       `u` `i` `o`
     `a` `s` `d`   or  `j` `k` `l`
     `z` `x` `c`       `m` `,` `.`
 
-The given bindings represent *josue*
-
 ## Overview 
-The first part assumes first 6 components:
+The initial segment assumes the initial six components:
 - Main
 - Server (blackboard using Posix Shared Memory)
-- Window (User interface)
+- Window (interface)
 - Watchdog
 - Drone
-- Keyboard Manager
+- Key Manager
 
-All of above mentioned components were created. For further details please refer to *SECTION 1 AND 2*.
+All of the aforementioned components were fabricated. To obtain more information, please consult *SECTION 1 AND 2*.
 
 
-General overview of first assignment, tasks, what was accomplished
-
-short definitions of all active components : what they do, which primitives used, which algorithms)
+Provide concise explanations of all active components, including their functions, the primitives they utilize, and the algorithms involved.
 
 ### Main
-Main process is the father of all processes. It creates child processes by using `fork()` and runs them inside a wrapper program `Konsole` to display the current status, debugging messages until an additional thread/process for colleceting log messages.
+The main process is the ultimate progenitor of all processes. The software generates child processes through the use of the `fork()` function and executes them within a wrapper program called `Konsole`. This allows for the display of the current status and debugging messages until an additional thread/process is created specifically for collecting log messages.
 
-After creating children, process stays in a infinte while loop awaiting termination of all processes, and when that happens - terminate itself.
+Upon generating offspring, the process enters an infinite while loop, persistently awaiting the termination of all processes. Once this condition is met, the process proceeds to terminate itself.
+
 
 ### Server
-Server process is the heart of this project. It creates all segments of the shared memory, and semaphores. It is also responsible of cleaning up of them, when being interrupted.
+The server process is the essential component of this project. This process generates all the components of the shared memory, including the segments and semaphores. It is also responsible for tidying them up when they are interrupted.
 
-Server operates by creating the semaphores and shared memory segments, then enters an infinite while loop awaiting for a signal from watchdog. After getting out of the loop (which should never happen, at the moment we assume the server closes only when interrupted) it cleans up the segments and semaphores, making sure no artifacts are left behind. 
+The server initializes semaphores and shared memory segments, and then starts an endless while loop, waiting for a signal from the watchdog. Upon exiting the loop (which is not expected to occur, as the current assumption is that the server only closes when stopped), it performs a cleanup of the segments and semaphores, ensuring that no remnants are left behind. 
+
 
 
 ### Watchdog
-Watchdog's job is to monitor the "health" of all of the processes, which means at this point if processes are running and not closed.
+The role of a watchdog is to oversee the operational status of all processes, ensuring that they are currently active and have not been terminated.
 
-During initialization it gets from special shared memory segment the PIDs of processes, (remember that in main we are running the wrapper process Konsole, so its not possible to get to know the actual PID from `fork()` in `main`, at this point at least).
+During initialization, the PIDs of processes are retrieved from a designated shared memory segment. It is important to note that in the main process, which is running the wrapper process Konsole, it is not feasible to obtain the true PID using `fork()` in `main` at this stage.
 
-Then the process enters while loop where it sends `SIGUSR1` to all of the processes checking if they are alive. They respond with `SIGUSR2` back to watchdog, knowing its PID thanks to `siginfo_t`. This zeroes the counter for programs to response. If the counter for any of them reaches the threshold, Watchdog sends `SIGINT` to all of the processes, and exits, making sure all of the semaphores it was using are closed. The same thing happens when Watchdog is interrupted.
+Subsequently, the process enters a while loop, wherein it dispatches a `SIGUSR1` signal to all the processes to verify their liveness. They reply to the watchdog by sending a `SIGUSR2` signal, using the process ID obtained from `siginfo_t`. This resets the counter for program responses. When the counter for any of them hits the threshold, Watchdog triggers a `SIGINT` signal to all processes and terminates, ensuring the closure of all semaphores it was utilizing. A similar occurrence arises when Watchdog is disrupted.
+
 
 ### Interface (Window)
-foo *josue*
+
 ### Drone
-foo *josue*
-### Keyboard manager
+
+### Key manager
 
 ### Additional Comments
-- Watchdog gets the PID from all of the process through a shared memory segment. This operation requires 3 semaphores (In author's opinion 2 would be enough, yet at this moment we needed tu ensure the stability of logic flow, and did not have time to polish this solution.)
-
-- We assume processes to be run in order it happens in `main.c`. If someone wishes to run processes seperatly, they may encounter segfaults that happen due to the fact that processes wish to access a non-existing shared memory components. Therefore we suggest to run project the way it is described in *Installation section*
+- The watchdog obtains the process ID (PID) of all the processes through a shared memory section. For this procedure to be executed, three semaphores are necessary. (In the view of the writer, two would suffice, but currently we needed to secure the stability of the logical progression and did not have the opportunity to refine this solution.)
 
