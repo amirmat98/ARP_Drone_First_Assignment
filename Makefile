@@ -1,5 +1,5 @@
 # Source directory and build directory
-SRCDIR = ./source
+SRCDIR = ./src
 BUILDDIR = ./build
 
 # UTILOBJ
