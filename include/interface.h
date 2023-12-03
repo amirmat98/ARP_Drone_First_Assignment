@@ -11,9 +11,6 @@
 #include <ctype.h>
 #include <fcntl.h>
 
-
-//#define REFRESH_RATE 20000
-
 int create_window(int max_x, int max_y);
 void draw_drone(int drone_x, int drone_y);
 void handle_input(int *shared_key, sem_t *semaphore);
