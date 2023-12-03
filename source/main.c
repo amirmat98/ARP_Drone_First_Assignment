@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     wd_pid = create_child(wd_args[0], wd_args);
     number_process++;
     printf("Watchdog Created\n");
+    
 
     /* Window - Interface */
     char* ui_args[] = {"konsole", "-e", "./build/interface", NULL};
