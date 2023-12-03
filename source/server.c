@@ -108,7 +108,6 @@ void signal_handler(int signo, siginfo_t *siginfo, void *context)
 
 void *create_shm(char *name)
 {
-    const int SIZE = 4096;  // the size (in bytes) of shared memory object
 
     int shm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);
     if (shm_fd == -1)
@@ -117,10 +116,10 @@ void *create_shm(char *name)
         exit(1);
     }
     /* configure the size of the shared memory object */
-    ftruncate(shm_fd, SIZE);
+    ftruncate(shm_fd, SIZE_SHM);
 
     /* memory map the shared memory object */
-    void *shm_ptr = mmap(0, SIZE, PROT_WRITE | PROT_READ, MAP_SHARED, shm_fd, 0); 
+    void *shm_ptr = mmap(0, SIZE_SHM, PROT_WRITE | PROT_READ, MAP_SHARED, shm_fd, 0); 
     if (shm_ptr == MAP_FAILED)
     {
         perror("Map Failed");
