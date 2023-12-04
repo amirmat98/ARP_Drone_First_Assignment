@@ -128,7 +128,7 @@ Within the interface working area (box), the drone process is the one responsibl
 
 As was the case with the processes that came before it, the initialization of all signals, shared memory, and semaphores occurs first. The initial values of numerous variables, such as position, velocity, and force, are also provided. Additionally, multiple variables are defined. 
 
-Other than the functions required for memory read/write and semaphores, the main loop does not make use of any special functions except for those necessities. There are two different approaches that are done in order to navigate the drone through the screen. The `step method`, which consisted of moving the drone one block (or step) at a time, was exclusively employed for the purpose of internal testing, and its selection is implemented through hard-coding. After that, we have the `euler method`, which is the default choice at the beginning of the program. This method contains the dynamic formulae for the drone, which cause the drone to move with inertia and viscous resistance.
+Other than the functions required for memory read/write and semaphores, the main loop does not make use of any special functions except for those necessities. There are two different approaches that are done in order to navigate the drone through the screen. The `step method`, which consisted of moving the drone one block (or step) at a time, was exclusively employed for the purpose of internal testing, and its selection is implemented through hard-coding. After that, we have the `differential_equations`, which is the default choice at the beginning of the program. This method contains the dynamic formulae for the drone, which cause the drone to move with inertia and viscous resistance.
 
 
 ### Key manager
