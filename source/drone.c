@@ -83,11 +83,11 @@ int main()
     // Variables for euler method
     double pos_x = (double)x;
     double v_x = 0.0;    // Initial velocity of x
-    double force_x = 1.0; // Applied force in the x direction
+    double force_x = 0; // Applied force in the x direction
 
     double pos_y = (double)y;
     double v_y = 0.0;    // Initial velocity of y
-    double force_y = 1.0; // Applied force in the y direction
+    double force_y = 0; // Applied force in the y direction
 
     bool euler_method_flag = true; // For testing purposes.
 
@@ -103,7 +103,7 @@ int main()
         if(euler_method_flag)
         {
             // Only values between -1 to 1 are used to move the drone
-            if(action_x >= -1.0 && action_x <= 1.0)
+            if(action_x > -1.0 && action_x < 1.0)
             {
                 force_x += (double)action_x;
                 force_y += (double)action_y;
@@ -123,7 +123,7 @@ int main()
             // Calling the function
             double max_x_f = (double)max_x;
             double max_y_f = (double)max_y;
-            euler_method(&pos_x, &v_x, force_x, &pos_y, &v_y, force_y, &max_x_f, &max_y_f);
+            differential_equations(&pos_x, &v_x, force_x, &pos_y, &v_y, force_y, &max_x_f, &max_y_f);
             // Only print the positions when there is still velocity present.
             if(fabs(v_x) > FLOAT_TOLERANCE || fabs(v_y) > FLOAT_TOLERANCE){
                 printf("Force (X,Y): %.2f,%.2f\n",force_x,force_y);
@@ -175,7 +175,7 @@ int main()
 
 
 // Implementation of the eulerMethod function
-void euler_method(double *x, double *v_x, double force_x, double *y, double *v_y, double force_y, double *max_x, double *max_y) {
+void differential_equations(double *x, double *v_x, double force_x, double *y, double *v_y, double force_y, double *max_x, double *max_y) {
     double acceleration_x = (force_x - DAMPING * (*v_x)) / MASS;
     double acceleration_y = (force_y - DAMPING * (*v_y)) / MASS;
 
