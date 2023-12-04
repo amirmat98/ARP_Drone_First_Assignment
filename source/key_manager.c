@@ -109,63 +109,63 @@ char* determine_action(int pressed_key, char *shared_action)
     int x; int y;
 
     // Disclaimer: Y axis is inverted on tested terminal.
-    if ( key == 'W' || key == 'I')
+    if ( key == 'W')
     {
         x = 0;    // Movement on the X axis.
         y = -1;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
         return "UP";
     }
-    if ( key == 'X' || key == ',')
+    if ( key == 'S')
     {
         x = 0;    // Movement on the X axis.
         y = 1;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
         return "DOWN";
     }
-    if ( key == 'A' || key == 'J')
+    if ( key == 'A')
     {
         x = -1;    // Movement on the X axis.
         y = 0;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
         return "LEFT";
     }
-    if ( key == 'D' || key == 'L')
+    if ( key == 'D')
     {
         x = 1;    // Movement on the X axis.
         y = 0;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
         return "RIGHT";
     }
-    if ( key == 'Q' || key == 'U')
+    if ( key == 'Q')
     {
         x = -1;    // Movement on the X axis.
         y = -1;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
         return "UP-LEFT";
     }
-    if ( key == 'E' || key == 'O')
+    if ( key == 'E')
     {
         x = 1;    // Movement on the X axis.
         y = -1;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
         return "UP-RIGHT";
     }
-    if ( key == 'Z' || key == 'M')
+    if ( key == 'Z')
     {
         x = -1;    // Movement on the X axis.
         y = 1;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
         return "DOWN-LEFT";
     }
-    if ( key == 'C' || key == '.')
+    if ( key == 'C')
     {
         x = 1;    // Movement on the X axis.
         y = 1;    // Movement on the Y axis.
         sprintf(shared_action, "%d,%d", x, y);
         return "DOWN-RIGHT";
     }
-    if ( key == 'S' || key == 'K')
+    if ( key == 'R')
     {
         x = 900;    // Special value interpreted by drone.c process
         y = 0;
