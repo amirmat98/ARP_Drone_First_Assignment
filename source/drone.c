@@ -26,7 +26,7 @@ char *shared_action;
 sem_t *sem_pos;
 sem_t *sem_action;
 
-
+// Watchdog Function
 void signal_handler(int signo, siginfo_t *siginfo, void *context) 
 {
     printf("Received signal number: %d \n", signo);
@@ -51,14 +51,12 @@ void signal_handler(int signo, siginfo_t *siginfo, void *context)
 
 int main()
 {
-
+    // Watchdog Variables
     struct sigaction sa;
     sa.sa_sigaction = signal_handler;
     sa.sa_flags = SA_SIGINFO;
     sigaction(SIGINT, &sa, NULL);
     sigaction (SIGUSR1, &sa, NULL);    
-
-
     publish_pid_to_wd(DRONE_SYM, getpid());
 
     // Shared memory for DRONE POSITION
@@ -71,6 +69,7 @@ int main()
 
     sem_pos = sem_open(SEMAPHORE_POSITION, 0);
     sem_action = sem_open(SEMAPHORE_ACTION, 0);
+    //----------------------------------------------------------------------------------------//
 
     // Variable declaration segment
     usleep(100000); // To let the interface.c process execute first write the initial positions.
@@ -80,7 +79,7 @@ int main()
     sscanf(shared_position, "%d,%d,%d,%d", &x, &y, &max_x, &max_y); // Obtain the values of X,Y from shared memory
 
 
-    // Variables for euler method
+    // Variables for differential_equations
     double pos_x = (double)x;
     double v_x = 0.0;    // Initial velocity of x
     double force_x = 0; // Applied force in the x direction
@@ -91,7 +90,7 @@ int main()
 
     bool euler_method_flag = true; // For testing purposes.
 
-    // Simulate the motion in an infinite loop using Euler's method
+    // Simulate the motion in an infinite loop using Differential Equations
     while (1) 
     {
         int x_i;
@@ -103,16 +102,20 @@ int main()
         if(euler_method_flag)
         {
             // Only values between -1 to 1 are used to move the drone
-            if(action_x > -1.0 && action_x < 1.0)
+            if(action_x >= -1.0 && action_x <= 1.0)
             {
                 force_x += (double)action_x;
                 force_y += (double)action_y;
                 // Capping the force to a maximum value
                 double force_max = 20;
-                if(force_x>force_max){force_x = force_max;}
-                if(force_y>force_max){force_y = force_max;}
-                if(force_x<-force_max){force_x = -force_max;}
-                if(force_y<-force_max){force_y = -force_max;}
+                if(force_x>force_max)
+                    {force_x = force_max;}
+                if(force_y>force_max)
+                    {force_y = force_max;}
+                if(force_x<-force_max)
+                    {force_x = -force_max;}
+                if(force_y<-force_max)
+                    {force_y = -force_max;}
             }
             // For now, other values for action represent a STOP command.
             else
@@ -124,8 +127,10 @@ int main()
             double max_x_f = (double)max_x;
             double max_y_f = (double)max_y;
             differential_equations(&pos_x, &v_x, force_x, &pos_y, &v_y, force_y, &max_x_f, &max_y_f);
+
             // Only print the positions when there is still velocity present.
-            if(fabs(v_x) > FLOAT_TOLERANCE || fabs(v_y) > FLOAT_TOLERANCE){
+            if(fabs(v_x) > FLOAT_TOLERANCE || fabs(v_y) > FLOAT_TOLERANCE)
+            {
                 printf("Force (X,Y): %.2f,%.2f\n",force_x,force_y);
                 printf("X - Position: %.2f / Velocity: %.2f\t|\t", pos_x, v_x);
                 printf("Y - Position: %.2f / Velocity: %.2f\n", pos_y, v_y);
@@ -174,7 +179,7 @@ int main()
 }
 
 
-// Implementation of the eulerMethod function
+// Implementation of the Differential Equations function
 void differential_equations(double *x, double *v_x, double force_x, double *y, double *v_y, double force_y, double *max_x, double *max_y) {
     double acceleration_x = (force_x - DAMPING * (*v_x)) / MASS;
     double acceleration_y = (force_y - DAMPING * (*v_y)) / MASS;
