@@ -54,7 +54,6 @@ int main()
     sa.sa_flags = SA_SIGINFO;
     sigaction (SIGINT, &sa, NULL);  
     sigaction (SIGUSR1, &sa, NULL);  
-
     publish_pid_to_wd(WINDOW_SYM, getpid());
 
 
@@ -69,12 +68,12 @@ int main()
 
     sem_key = sem_open(SEMAPHORE_KEY, 0);
     sem_pos = sem_open(SEMAPHORE_POSITION, 0);
+    //----------------------------------------------------------------------------------------//
 
     /* INITIALIZATION AND EXECUTION OF NCURSES FUNCTIONS */
     initscr(); // Initialize
     timeout(0); // Set non-blocking getch
     curs_set(0); // Hide the cursor from the terminal
-    //create_window();  // Create the windows on the spawned 'Konsole' terminal.
     start_color(); // Initialize color for drawing drone
     init_pair(1, COLOR_BLUE, COLOR_BLACK); // Drone will be of color blue
     noecho(); // Disable echoing: no key character will be shown when pressed.
@@ -108,13 +107,8 @@ int main()
         draw_drone(drone_x, drone_y);
         // Call the function that obtains the key that has been pressed.
         handle_input(ptr_key, sem_key);
-        /* Update drone position */
-        //sem_wait(semaphorePos);
-        //sscanf(ptr_pos, "%d,%d,%d,%d", &drone_x, &drone_y, &max_x, &max_y); // Obtain the values of X,Y from shared memory
-        //sem_post(semaphorePos);
-        //usleep(20000);
-        //continue;
     }
+
     // Clean up and finish up resources taken by ncurses
     endwin(); 
     // close shared memories
@@ -145,8 +139,10 @@ int create_window(int max_x, int max_y)
 
     // Refresh the screen to apply changes
     refresh();
-    if(new_max_x != max_x || new_max_y != max_y){return 1;}
-    else{return 0;}
+    if(new_max_x != max_x || new_max_y != max_y)
+        {return 1;}
+    else
+        {return 0;}
 }
 
 void draw_drone(int drone_x, int drone_y)
@@ -161,7 +157,6 @@ void draw_drone(int drone_x, int drone_y)
 void handle_input(int *shared_key, sem_t *semaphore)
 {
     int ch;
-    //noecho(); // Disable echoing: no key character will be shown when pressed.
     if ((ch = getch()) != ERR)
     {
         // Store the pressed key in shared memory
@@ -170,6 +165,5 @@ void handle_input(int *shared_key, sem_t *semaphore)
         *shared_key = ch;    // Store the pressed key in shared memory
         sem_post(semaphore);    // Signal the semaphore to process key_manager.c
     }
-    //echo(); // Re-enable echoing
     flushinp(); // Clear the input buffer
 }
